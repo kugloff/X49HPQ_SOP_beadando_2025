@@ -1,0 +1,117 @@
+swagger: "2.0"
+info:
+  title: "Saját Lista API"
+  version: "1.0.0"
+  description: "CRUD műveletek a saját listás filmekhez, JWT hitelesítéssel."
+
+host: "localhost:3010"
+basePath: "/"
+schemes:
+  - "http"
+
+securityDefinitions:
+  Bearer:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+    description: "JWT token formátum: 'Bearer <token>'"
+
+paths:
+  /login:
+    post:
+      tags: ["Auth"]
+      summary: "Token kérése"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            example:
+              username: "admin"
+              password: "admin"
+            properties:
+              username: { type: "string" }
+              password: { type: "string" }
+      responses:
+        200: { description: "Sikeres bejelentkezés" }
+        401: { description: "Hibás adatok" }
+
+  /sajatlista:
+    get:
+      tags: ["Filmek"]
+      summary: "Saját lista lekérdezése"
+      responses:
+        200: { description: "Filmek listája" }
+    post:
+      tags: ["Filmek"]
+      summary: "Film hozzáadása"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            example:
+              film_id: "S-001"
+              film_title: "Stranger Things"
+              genre: "Drama, Fantasy, Horror"
+              length: 50
+              premiere: 2016
+              date: 2025
+              series_movie: "Series"
+              picture: "https://example.com/strangerthings.jpg"
+              in_my_list: true
+            required: [film_id, film_title, genre, length, premiere, date, series_movie, picture]
+            properties:
+              film_id: { type: "string" }
+              film_title: { type: "string" }
+              genre: { type: "string" }
+              length: { type: "integer" }
+              premiere: { type: "integer" }
+              date: { type: "integer" }
+              series_movie: { type: "string" }
+              picture: { type: "string" }
+              in_my_list: { type: "boolean" }
+      responses:
+        201: { description: "Létrehozva" }
+        401: { description: "Nincs jogosultság" }
+
+  /sajatlista/{film_id}:
+    put:
+      tags: ["Filmek"]
+      summary: "Film módosítása"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "film_id"
+          in: "path"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          schema:
+            type: "object"
+            example:
+              in_my_list: false
+            properties:
+              film_title: { type: "string" }
+              genre: { type: "string" }
+              in_my_list: { type: "boolean" }
+      responses:
+        200: { description: "Frissítve" }
+        404: { description: "Nem található" }
+    delete:
+      tags: ["Filmek"]
+      summary: "Film törlése"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "film_id"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        200: { description: "Törölve" }
