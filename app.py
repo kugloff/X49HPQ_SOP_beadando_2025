@@ -7,18 +7,15 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Konfiguráció
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sajatlista.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_SECRET_KEY"] = "titkos_kulcs_a_fejleszteshez"
+app.config["JWT_SECRET_KEY"] = "titkos"
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
-# SWAGGER betöltése fájlból
 swagger = Swagger(app, template_file='swagger.yaml')
 
-# Modell
 class Film(db.Model):
     __tablename__ = "filmek"
     film_id = db.Column(db.String, primary_key=True)
@@ -44,7 +41,6 @@ class Film(db.Model):
             "in_my_list": self.in_my_list
         }
 
-# Végpontok
 @app.route("/")
 def index():
     return jsonify({"message": "API fut. Dokumentáció: /apidocs"})
